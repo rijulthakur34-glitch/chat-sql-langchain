@@ -14,6 +14,23 @@ st.title("🦜 LangChain: Chat with SQL DB")
 LOCALDB="USE_LOCALDB"
 MYSQL="USE_MYSQL"
 
+# Auto-generate the SQLite database if it doesn't exist (e.g. on Streamlit Cloud)
+db_path = Path(__file__).parent / "student.db"
+if not db_path.exists():
+    connection=sqlite3.connect(db_path)
+    cursor=connection.cursor()
+    cursor.execute("""
+    create table if not exists STUDENT(NAME VARCHAR(25),CLASS VARCHAR(25),
+    SECTION VARCHAR(25),MARKS INT)
+    """)
+    cursor.execute('''Insert Into STUDENT values('Krish','Data Science','A',90)''')
+    cursor.execute('''Insert Into STUDENT values('John','Data Science','B',100)''')
+    cursor.execute('''Insert Into STUDENT values('Mukesh','Data Science','A',86)''')
+    cursor.execute('''Insert Into STUDENT values('Jacob','DEVOPS','A',50)''')
+    cursor.execute('''Insert Into STUDENT values('Dipesh','DEVOPS','A',35)''')
+    connection.commit()
+    connection.close()
+
 radio_opt=["Use SQLLite 3 Database- Student.db","Connect to you MySQL Database"]
 
 selected_opt=st.sidebar.radio(label="Choose the DB which you want to chat",options=radio_opt)
